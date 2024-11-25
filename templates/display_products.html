@@ -3,48 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Products</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <title>Product Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,123,255,0.1);
+        }
+        .actions-column {
+            white-space: nowrap;
+        }
+        .card-table {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Product List</h2>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-        <a href="{{ url_for('add_product_page') }}" class="btn btn-success mb-3">Add New Product</a>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                <tr>
-                    <td>{{ product[0] }}</td>
-                    <td>{{ product[1] }}</td>
-                    <td>{{ product[2] }}</td>
-                    <td>{{ product[3] }}</td>
-                    <td>
-                        <a href="{{ url_for('update_product_view', id=product[0]) }}" class="btn btn-primary btn-sm">Update</a>
-                        <form action="{{ url_for('delete_product', id=product[0]) }}" method="post" style="display:inline-block;">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </td>
-                    
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="card card-table">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Product Management</h3>
+                <a href="{{ url_for('add_product_page') }}" class="btn btn-light">+ Add Product</a>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="p-3">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Description</th>
+                            <th class="actions-column">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product[0] }}</td>
+                            <td>{{ product[1] }}</td>
+                            <td>{{ product[2] }}</td>
+                            <td>{{ product[3][:50] }}{% if product[3]|length > 50 %}...{% endif %}</td>
+                            <td class="actions-column">
+                                <a href="{{ url_for('update_product_view', id=product[0]) }}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                <form action="{{ url_for('delete_product', id=product[0]) }}" method="post" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 </html>
